@@ -1,0 +1,6 @@
+api/config.php
+api/config.local.php
+.env
+node_modules/
+storage/
+*.log
