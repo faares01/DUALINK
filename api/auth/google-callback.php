@@ -21,4 +21,4 @@ $upsert->execute([$identity['sub'], $identity['email'], $identity['name'] ?? $id
 $user=$pdo->prepare('SELECT id FROM users WHERE google_sub=?'); $user->execute([$identity['sub']]); $userId=(int)$user->fetchColumn();
 $rawSession=bin2hex(random_bytes(32)); $insert=$pdo->prepare('INSERT INTO sessions(user_id,token_hash,expires_at) VALUES(?,?,DATE_ADD(NOW(), INTERVAL 30 DAY))'); $insert->execute([$userId,hash('sha256',$rawSession)]);
 $secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'); setcookie('dualink_session',$rawSession,['expires'=>time()+60*60*24*30,'path'=>'/','secure'=>$secure,'httponly'=>true,'samesite'=>'Lax']);
-header('Location: ' . rtrim($config['app_url'], '/') . '/index.html'); exit;
+header('Location: ' . rtrim($config['app_url'], '/') . '/app.html'); exit;
