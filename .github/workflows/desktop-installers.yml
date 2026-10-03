@@ -30,5 +30,24 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: DUALINK-${{ runner.os }}
-          path: desktop/electron/dist/*
+          path: |
+            desktop/electron/dist/*.AppImage
+            desktop/electron/dist/*.deb
+            desktop/electron/dist/*.rpm
+            desktop/electron/dist/*.pacman
+            desktop/electron/dist/*.exe
           if-no-files-found: error
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: release/*

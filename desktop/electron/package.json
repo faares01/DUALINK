@@ -1,6 +1,6 @@
 {
   "name": "dualink-desktop",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "The native Windows and Linux companion for DUALINK.",
   "author": { "name": "FARES ALAMRI — FAA", "email": "hello@faaa.space" },
@@ -20,7 +20,7 @@
     "appId": "space.faaa.dualink",
     "productName": "DUALINK",
     "files": ["src/**/*", "package.json"],
-    "linux": { "target": ["AppImage", "deb"], "category": "Utility" },
+    "linux": { "target": ["AppImage", "deb", "rpm", "pacman"], "category": "Utility" },
     "win": { "target": ["nsis", "portable"] }
   }
 }
