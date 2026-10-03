@@ -1,6 +1,6 @@
 {
   "name": "dualink-desktop",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "The native Windows and Linux companion for DUALINK.",
   "author": { "name": "FARES ALAMRI — FAA", "email": "hello@faaa.space" },
