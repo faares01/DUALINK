@@ -30,6 +30,10 @@
     if(!response.ok){window.showDualinkToast?.('Could not save note','Check your connection and sign in again.');return;}
     await loadRealData(); window.showDualinkToast?.('Note saved','It is stored in your DUALINK account.');
   },true);
-  document.querySelector('#send-button')?.addEventListener('click', event => { event.stopImmediatePropagation(); window.showDualinkToast?.('Desktop companion required','Send Across becomes available after a connected desktop app is online.'); }, true);
+  document.querySelector('#send-button')?.addEventListener('click', event => {
+    if (window.__DUALINK_DESKTOP__?.sendAcross) return;
+    event.stopImmediatePropagation();
+    window.showDualinkToast?.('Desktop companion required','Install and open DUALINK on both systems, then sign in with the same Google account.');
+  }, true);
   loadRealData();
 })();
