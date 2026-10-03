@@ -5,6 +5,7 @@ $config = require __DIR__ . '/../config.php';
 function fail(string $message, int $status = 400): never { http_response_code($status); echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8'); exit; }
 if (!hash_equals($_SESSION['google_oauth_state'] ?? '', $_GET['state'] ?? '')) fail('Invalid sign-in state. Start the sign-in again.');
 unset($_SESSION['google_oauth_state']);
+$desktopLogin = !empty($_SESSION['google_oauth_desktop']); unset($_SESSION['google_oauth_desktop']);
 if (empty($_GET['code'])) fail('Google did not return an authorization code.');
 function curlJson(string $url, array $options = []): array {
   $curl = curl_init($url); curl_setopt_array($curl, $options + [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 15]);
@@ -19,6 +20,12 @@ try { $pdo = new PDO("mysql:host={$config['db']['host']};dbname={$config['db']['
 $upsert=$pdo->prepare('INSERT INTO users(google_sub,email,display_name,avatar_url) VALUES(?,?,?,?) ON DUPLICATE KEY UPDATE email=VALUES(email), display_name=VALUES(display_name), avatar_url=VALUES(avatar_url)');
 $upsert->execute([$identity['sub'], $identity['email'], $identity['name'] ?? $identity['email'], $identity['picture'] ?? null]);
 $user=$pdo->prepare('SELECT id FROM users WHERE google_sub=?'); $user->execute([$identity['sub']]); $userId=(int)$user->fetchColumn();
+if ($desktopLogin) {
+  $handoff = bin2hex(random_bytes(32));
+  $q=$pdo->prepare('INSERT INTO desktop_login_tokens(token_hash,user_id,expires_at) VALUES(?,?,DATE_ADD(NOW(), INTERVAL 5 MINUTE))');
+  $q->execute([hash('sha256',$handoff),$userId]);
+  header('Location: dualink://auth?code=' . rawurlencode($handoff)); exit;
+}
 $rawSession=bin2hex(random_bytes(32)); $insert=$pdo->prepare('INSERT INTO sessions(user_id,token_hash,expires_at) VALUES(?,?,DATE_ADD(NOW(), INTERVAL 30 DAY))'); $insert->execute([$userId,hash('sha256',$rawSession)]);
 $secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'); setcookie('dualink_session',$rawSession,['expires'=>time()+60*60*24*30,'path'=>'/','secure'=>$secure,'httponly'=>true,'samesite'=>'Lax']);
 header('Location: ' . rtrim($config['app_url'], '/') . '/app.html'); exit;

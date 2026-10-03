@@ -1,6 +1,6 @@
 {
   "name": "dualink-desktop",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "private": true,
   "description": "The native Windows and Linux companion for DUALINK.",
   "author": { "name": "FARES ALAMRI — FAA", "email": "hello@faaa.space" },
@@ -10,15 +10,19 @@
     "start": "electron .",
     "dev": "electron .",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder --publish never"
   },
   "devDependencies": {
     "electron": "^40.0.0",
     "electron-builder": "^26.0.12"
   },
+  "dependencies": {
+    "electron-updater": "^6.6.2"
+  },
   "build": {
     "appId": "space.faaa.dualink",
     "productName": "DUALINK",
+    "publish": [{ "provider": "github", "owner": "faares01", "repo": "DUALINK" }],
     "files": ["src/**/*", "package.json"],
     "linux": { "target": ["AppImage", "deb", "rpm", "pacman"], "category": "Utility", "synopsis": "Move selected files between Linux and Windows" },
     "win": { "target": ["nsis", "portable"] }

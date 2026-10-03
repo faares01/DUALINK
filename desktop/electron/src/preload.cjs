@@ -2,6 +2,8 @@ const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('__DUALINK_DESKTOP__', Object.freeze({
   pickFolder: () => ipcRenderer.invoke('dualink:pick-folder'),
+  startLogin: () => ipcRenderer.invoke('dualink:start-login'),
+  checkUpdates: () => ipcRenderer.invoke('dualink:check-updates'),
   pickFile: () => ipcRenderer.invoke('dualink:pick-file'),
   listFolders: async ({ path }) => ipcRenderer.invoke('dualink:list-folders', path),
   approvedRoots: () => ipcRenderer.invoke('dualink:approved-roots'),
