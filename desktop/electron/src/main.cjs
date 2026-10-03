@@ -61,3 +61,8 @@ ipcMain.handle('dualink:notify', async (_event, payload) => {
   return true
 })
 ipcMain.handle('dualink:device-info', async () => ({ id: (await readState()).deviceId, platform: process.platform, appVersion: app.getVersion(), origin: APP_ORIGIN }))
+ipcMain.handle('dualink:set-start-at-login', async (_event, enabled) => {
+  app.setLoginItemSettings({ openAtLogin: Boolean(enabled), openAsHidden: true })
+  return app.getLoginItemSettings().openAtLogin
+})
+ipcMain.handle('dualink:get-start-at-login', async () => app.getLoginItemSettings().openAtLogin)

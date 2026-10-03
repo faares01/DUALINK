@@ -7,4 +7,6 @@ contextBridge.exposeInMainWorld('__DUALINK_DESKTOP__', Object.freeze({
   saveMapping: mapping => ipcRenderer.invoke('dualink:save-mapping', mapping),
   notify: payload => ipcRenderer.invoke('dualink:notify', payload),
   deviceInfo: () => ipcRenderer.invoke('dualink:device-info')
+  ,setStartAtLogin: enabled => ipcRenderer.invoke('dualink:set-start-at-login', enabled)
+  ,getStartAtLogin: () => ipcRenderer.invoke('dualink:get-start-at-login')
 }))

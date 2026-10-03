@@ -1,4 +1,4 @@
-DirectoryIndex landing.html index.html
+DirectoryIndex index.html
 Options -Indexes
 
 <IfModule mod_rewrite.c>
