@@ -2,7 +2,7 @@
   const gate = document.querySelector('#login-gate');
   const googleButton = gate?.querySelector('.google-button');
   if (googleButton && window.__DUALINK_DESKTOP__?.startLogin) {
-    googleButton.addEventListener('click', event => { event.preventDefault(); window.__DUALINK_DESKTOP__.startLogin(); });
+    googleButton.addEventListener('click', event => { event.preventDefault(); window.__DUALINK_DESKTOP__.startLogin().catch(() => { window.showDualinkToast?.('Could not start sign-in', 'Check your connection, then try Google again.'); }); });
   }
   fetch('api/auth/me.php', { credentials: 'same-origin', cache: 'no-store' })
     .then(response => response.ok ? response.json() : Promise.reject())

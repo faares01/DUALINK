@@ -37,7 +37,24 @@ async function completeDesktopLogin(url) {
     if (Notification.isSupported()) new Notification({ title: 'DUALINK', body: 'Signed in successfully. Your device is connecting.' }).show()
   } catch (error) { dialog.showErrorBox('DUALINK sign-in', error.message || 'The sign-in link could not be verified.') }
 }
-function beginDesktopLogin() { shell.openExternal(`${APP_ORIGIN}/api/auth/google.php?desktop=1`) }
+async function beginDesktopLogin() {
+  const response = await fetch(`${APP_ORIGIN}/api/auth/desktop-login-start.php`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+  const login = await response.json(); if (!response.ok || !login.request || !login.poll) throw new Error(login.error || 'Could not start desktop sign-in')
+  await shell.openExternal(`${APP_ORIGIN}/api/auth/google.php?desktop=1&request=${encodeURIComponent(login.request)}`)
+  const deadline = Date.now() + (login.expires_in * 1000)
+  while (Date.now() < deadline) {
+    await new Promise(resolve => setTimeout(resolve, 1800))
+    const poll = await fetch(`${APP_ORIGIN}/api/auth/desktop-login-poll.php`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ request: login.request, poll: login.poll }) })
+    const result = await poll.json()
+    if (poll.status === 202) continue
+    if (!poll.ok || !result.token) throw new Error(result.error || 'Sign-in could not be completed')
+    await session.defaultSession.cookies.set({ url: APP_ORIGIN, name: 'dualink_session', value: result.token, secure: true, httpOnly: true, sameSite: 'lax', expirationDate: Math.floor(Date.now() / 1000) + result.expires_in })
+    mainWindow?.show(); mainWindow?.loadURL(APP_URL)
+    if (Notification.isSupported()) new Notification({ title: 'DUALINK', body: 'Signed in successfully. Your device is connecting.' }).show()
+    return true
+  }
+  throw new Error('Sign-in timed out. Start again from DUALINK.')
+}
 function checkForUpdates() {
   if (!app.isPackaged) return Promise.resolve({ skipped: true })
   return autoUpdater.checkForUpdates()
@@ -79,7 +96,7 @@ ipcMain.handle('dualink:pick-folder', async () => {
   if (!state.approvedRoots.includes(folder)) { state.approvedRoots.push(folder); await writeState(state) }
   return folder
 })
-ipcMain.handle('dualink:start-login', async () => { beginDesktopLogin(); return true })
+ipcMain.handle('dualink:start-login', async () => beginDesktopLogin())
 ipcMain.handle('dualink:check-updates', async () => checkForUpdates())
 ipcMain.handle('dualink:pick-file', async () => {
   const result = await dialog.showOpenDialog({ title: 'Choose a file to send with DUALINK', properties: ['openFile'] })
