@@ -7,4 +7,4 @@ window.__DUALINK_DESKTOP__.listFolders({ platform: 'linux' | 'windows', path })
 // => [{ name: 'Projects', path: '/home/fares/Projects' }]
 ```
 
-The native shell must reject paths outside the folders approved by the user. The website uses this bridge only for the **New Folder Link** picker and does not persist or send its results until the person saves a folder link.
+The native shell must reject paths outside the folders approved by the user. The website uses this bridge only for the **New Folder Link** picker and does not persist or send its results until the person saves a folder link. The Electron companion implements this contract in `desktop/electron/src/preload.cjs`.

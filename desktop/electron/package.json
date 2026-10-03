@@ -1,0 +1,24 @@
+{
+  "name": "dualink-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The native Windows and Linux companion for DUALINK.",
+  "main": "src/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^40.0.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "space.faaa.dualink",
+    "productName": "DUALINK",
+    "files": ["src/**/*", "package.json"],
+    "linux": { "target": ["AppImage", "deb"], "category": "Utility" },
+    "win": { "target": ["nsis", "portable"] }
+  }
+}
