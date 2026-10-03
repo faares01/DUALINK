@@ -26,6 +26,8 @@ jobs:
           cache: npm
           cache-dependency-path: desktop/electron/package-lock.json
       - run: npm ci
+      - if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libarchive-tools
       - run: ${{ matrix.command }}
       - uses: actions/upload-artifact@v4
         with:
