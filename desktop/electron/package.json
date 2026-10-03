@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "description": "The native Windows and Linux companion for DUALINK.",
+  "author": { "name": "FARES ALAMRI — FAA", "email": "hello@faaa.space" },
+  "homepage": "https://faaa.space",
   "main": "src/main.cjs",
   "scripts": {
     "start": "electron .",

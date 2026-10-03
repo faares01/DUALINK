@@ -1,0 +1,34 @@
+name: Build desktop installers
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            command: npm run dist
+          - os: windows-latest
+            command: npm run dist
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: desktop/electron
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: desktop/electron/package-lock.json
+      - run: npm ci
+      - run: ${{ matrix.command }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DUALINK-${{ runner.os }}
+          path: desktop/electron/dist/*
+          if-no-files-found: error
